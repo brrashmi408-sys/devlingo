@@ -19,15 +19,16 @@ export default function Home() {
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // auto-scroll like ChatGPT
+  // Auto-scroll like ChatGPT
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // 🔹 Send error (ALWAYS English first)
   const sendError = async (error: string) => {
-    if (!error.trim()) return;
+    if (!error.trim() || loading) return;
 
-    // 1️⃣ add user message
+    // User message
     setMessages((prev) => [
       ...prev,
       { role: "user", content: error },
@@ -35,53 +36,85 @@ export default function Home() {
 
     setLoading(true);
 
-    // 2️⃣ explain via Groq
+    // Explain via Groq
     const explainRes = await fetch("/api/explain", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error }),
     });
 
-    let explainData = await explainRes.json();
+    const explainData = await explainRes.json();
 
-    let explanation = explainData.explanation;
-    let suggestion = explainData.suggestion;
-
-    // 3️⃣ translate if needed
-    if (lang !== "en") {
-      const translateRes = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lang,
-          text: { explanation, suggestion },
-        }),
-      });
-
-      const translated = await translateRes.json();
-      explanation = translated.explanation;
-      suggestion = translated.suggestion;
-    }
-
-    // 4️⃣ add assistant message
+    // Assistant message (English canonical)
     setMessages((prev) => [
       ...prev,
       {
         role: "assistant",
-        explanation,
-        suggestion,
+        explanation: explainData.explanation,
+        suggestion: explainData.suggestion,
       },
     ]);
 
     setLoading(false);
   };
 
+  // 🔹 Translate ONLY the last assistant message
+  const translateLastAssistantMessage = async (language: string) => {
+    if (language === "en" || loading) return;
+
+    setLoading(true);
+
+    const lastAssistantIndex = [...messages]
+      .map((m, i) => ({ m, i }))
+      .reverse()
+      .find((x) => x.m.role === "assistant")?.i;
+
+    if (lastAssistantIndex === undefined) {
+      setLoading(false);
+      return;
+    }
+
+    const last = messages[lastAssistantIndex];
+
+    const res = await fetch("/api/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lang: language,
+        text: {
+          explanation: last.explanation,
+          suggestion: last.suggestion,
+        },
+      }),
+    });
+
+    const translated = await res.json();
+
+    setMessages((prev) => {
+      const updated = [...prev];
+      updated[lastAssistantIndex] = {
+        ...last,
+        explanation: translated.explanation,
+        suggestion: translated.suggestion,
+      };
+      return updated;
+    });
+
+    setLoading(false);
+  };
+
   return (
     <div className="flex h-screen flex-col">
-      {/* Header with language + theme */}
-      <Header lang={lang} onLangChange={setLang} />
+      {/* Header */}
+      <Header
+        lang={lang}
+        onLangChange={(newLang) => {
+          setLang(newLang);
+          translateLastAssistantMessage(newLang);
+        }}
+      />
 
-      {/* Chat messages */}
+      {/* Chat Area */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-3xl flex flex-col gap-4">
           {messages.map((msg, index) => (
@@ -98,7 +131,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Fixed bottom input */}
+      {/* Chat Input */}
       <ChatInput onSend={sendError} loading={loading} />
     </div>
   );

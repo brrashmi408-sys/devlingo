@@ -4,7 +4,12 @@ import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSelect } from "@/components/LanguageSelect";
 
-export function Header({ lang, onLangChange }: any) {
+interface HeaderProps {
+    lang: string;
+    onLangChange: (newLang: string) => void;
+}
+
+export function Header({ lang, onLangChange }: HeaderProps) {
     return (
         <header className="w-full border-b border-border">
             <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
