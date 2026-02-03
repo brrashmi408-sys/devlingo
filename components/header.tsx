@@ -20,7 +20,7 @@ export function Header({ lang, onLangChange }: HeaderProps) {
                             src="/devlingo.jpg"
                             alt="DevLingo"
                             fill
-                            className="object-cover scale-150"
+                            className="object-cover scale-100"
                             priority
                         />
                     </div>

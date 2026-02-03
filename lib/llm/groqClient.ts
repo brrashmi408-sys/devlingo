@@ -1,13 +1,49 @@
 // lib/llm/groqClient.ts
-
 import { explainErrorPrompt } from "@/lib/prompts/explainError";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-export async function explainWithGroq(errorMessage: string) {
+const SUPPORTED_LANGS = {
+    en: "English",
+    hi: "Hindi",
+    kn: "Kannada",
+    ml: "Malayalam",
+    ta: "Tamil",
+    te: "Telugu",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    it: "Italian",
+    pt: "Portuguese",
+} as const;
+
+export async function explainWithGroq(errorMessage: string, lang: string = "en") {
     if (!process.env.GROQ_API_KEY) {
         throw new Error("GROQ_API_KEY is missing in environment variables");
     }
+
+    if (!SUPPORTED_LANGS[lang as keyof typeof SUPPORTED_LANGS]) {
+        throw new Error(`Unsupported language: ${lang}. Supported: ${Object.keys(SUPPORTED_LANGS).join(", ")}`);
+    }
+
+    const langName = SUPPORTED_LANGS[lang as keyof typeof SUPPORTED_LANGS];
+
+    // 🔥 Updated prompt: explanation + suggestion + CORRECTED CODE EXAMPLE
+    const fullPrompt = `
+${explainErrorPrompt(errorMessage)}
+
+CRITICAL INSTRUCTIONS:
+${lang === "en" ?
+            "Respond in clear, professional English." :
+            `TRANSLATE EVERYTHING TO ${langName.toUpperCase()}. Use simple, natural language. Keep ALL code snippets, technical terms, variable names, and file paths in English.`}
+
+Return ONLY valid JSON (no markdown, no extra text):
+{
+  "explanation": "Clear explanation of the error (1-3 sentences)",
+  "suggestion": "Step-by-step numbered fix instructions", 
+  "correctedCode": "Complete working code example that fixes this error"
+}
+    `.trim();
 
     const response = await fetch(GROQ_API_URL, {
         method: "POST",
@@ -17,15 +53,24 @@ export async function explainWithGroq(errorMessage: string) {
         },
         body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
-            temperature: 0.3,
+            temperature: 0.1,
+            max_tokens: 1200,  // Increased for code examples
             messages: [
                 {
                     role: "system",
-                    content: "You are a helpful programming tutor."
+                    content: `You are DevLingo, a coding error explainer. ALWAYS respond with valid JSON only:
+
+{
+  "explanation": "What went wrong and why (1-3 sentences)",
+  "suggestion": "3-5 step numbered fix instructions", 
+  "correctedCode": "Complete, working code example that fixes this exact error"
+}
+
+Never use markdown, code blocks, or extra text. Code must be valid and executable.`
                 },
                 {
                     role: "user",
-                    content: explainErrorPrompt(errorMessage)
+                    content: fullPrompt
                 }
             ]
         })
@@ -33,12 +78,11 @@ export async function explainWithGroq(errorMessage: string) {
 
     if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Groq API error: ${errText}`);
+        throw new Error(`Groq API error: ${response.status} - ${errText}`);
     }
 
     const data = await response.json();
 
-    // Groq returns OpenAI-compatible response
     const content = data.choices?.[0]?.message?.content;
 
     if (!content) {

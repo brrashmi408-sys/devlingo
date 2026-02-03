@@ -1,0 +1,81 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Code2, Terminal, Languages } from "lucide-react";
+
+export function ChatEmptyState() {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col items-center justify-center text-center h-[60vh] px-6"
+        >
+            {/* Illustration */}
+            <motion.div
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="mb-6"
+            >
+                <img
+                    src="https://img.freepik.com/free-vector/stay-immune-threats-with-our-firewall-safety-technology_1017-51292.jpg"
+                    alt="Developer-friendly error explanation"
+                    className="mb-6 w-[60px] rounded-xl"
+                />
+
+            </motion.div>
+
+            <h2 className="text-xl font-semibold mb-2">
+                Welcome to DevLingo 👋
+            </h2>
+
+            <p className="text-sm text-muted-foreground max-w-md mb-8">
+                Paste an error, log, or code snippet and get a clear explanation
+                in your native language — without breaking your code.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl w-full">
+                <Example
+                    icon={<Code2 className="h-5 w-5" />}
+                    title="Compiler Errors"
+                    text="error: expected ';' before '}'"
+                />
+                <Example
+                    icon={<Terminal className="h-5 w-5" />}
+                    title="CLI Errors"
+                    text="npm ERR! peer dependency conflict"
+                />
+                <Example
+                    icon={<Languages className="h-5 w-5" />}
+                    title="Native Language"
+                    text="Get explanations in Tamil, Hindi, Telugu…"
+                />
+            </div>
+        </motion.div>
+    );
+}
+
+function Example({
+    icon,
+    title,
+    text,
+}: {
+    icon: React.ReactNode;
+    title: string;
+    text: string;
+}) {
+    return (
+        <motion.div
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="rounded-lg border bg-background p-4 text-left"
+        >
+            <div className="flex items-center gap-2 mb-1 text-sm font-medium">
+                {icon}
+                {title}
+            </div>
+            <p className="text-xs text-muted-foreground">{text}</p>
+        </motion.div>
+    );
+}
