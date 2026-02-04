@@ -4,10 +4,11 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSelect } from "@/components/LanguageSelect";
+import { type SupportedLang } from "@/lib/i18n/languages";
 
 interface HeaderProps {
-    lang: string;
-    onLangChange: (newLang: string) => void;
+    lang: SupportedLang;
+    onLangChange: (newLang: SupportedLang) => void;
 }
 
 export function Header({ lang, onLangChange }: HeaderProps) {

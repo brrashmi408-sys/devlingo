@@ -7,10 +7,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { LANG_OPTIONS, type SupportedLang } from "@/lib/i18n/languages";
 
 type Props = {
-    value: string;
-    onChange: (value: string) => void;
+    value: SupportedLang;
+    onChange: (value: SupportedLang) => void;
 };
 
 export function LanguageSelect({ value, onChange }: Props) {
@@ -26,15 +27,11 @@ export function LanguageSelect({ value, onChange }: Props) {
                 align="end"
                 className="max-h-60 overflow-y-auto"
             >
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="hi">Hindi</SelectItem>
-                <SelectItem value="ta">Tamil</SelectItem>
-                <SelectItem value="te">Telugu</SelectItem>
-                <SelectItem value="kn">Kannada</SelectItem>
-                <SelectItem value="ml">Malayalam</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="de">German</SelectItem>
+                {LANG_OPTIONS.map(({ code, label }) => (
+                    <SelectItem key={code} value={code}>
+                        {label}
+                    </SelectItem>
+                ))}
             </SelectContent>
         </Select>
     );

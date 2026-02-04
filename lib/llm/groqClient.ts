@@ -1,21 +1,8 @@
 // lib/llm/groqClient.ts
 import { explainErrorPrompt } from "@/lib/prompts/explainError";
+import { SUPPORTED_LANGS, type SupportedLang } from "../i18n/languages";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-
-const SUPPORTED_LANGS = {
-    en: "English",
-    hi: "Hindi",
-    kn: "Kannada",
-    ml: "Malayalam",
-    ta: "Tamil",
-    te: "Telugu",
-    es: "Spanish",
-    fr: "French",
-    de: "German",
-    it: "Italian",
-    pt: "Portuguese",
-} as const;
 
 export async function explainWithGroq(errorMessage: string, lang: string = "en") {
     if (!process.env.GROQ_API_KEY) {
