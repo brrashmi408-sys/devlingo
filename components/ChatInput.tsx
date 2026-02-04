@@ -8,9 +8,11 @@ import { Send } from "lucide-react";
 export function ChatInput({
     onSend,
     loading,
+    placeholder,
 }: {
     onSend: (value: string) => void;
     loading: boolean;
+    placeholder: string;
 }) {
     const [value, setValue] = useState("");
 
@@ -32,7 +34,7 @@ export function ChatInput({
                             send();
                         }
                     }}
-                    placeholder="Ask me anything (paste your error here)…"
+                    placeholder={placeholder}
                     className="h-12 rounded-full px-4"
                 />
 

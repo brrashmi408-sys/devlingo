@@ -3,7 +3,22 @@
 import { motion } from "framer-motion";
 import { Code2, Terminal, Languages } from "lucide-react";
 
-export function ChatEmptyState() {
+export function ChatEmptyState({
+    title,
+    description,
+    examples,
+}: {
+    title: string;
+    description: string;
+    examples: {
+        compilerTitle: string;
+        compilerText: string;
+        cliTitle: string;
+        cliText: string;
+        nativeTitle: string;
+        nativeText: string;
+    };
+}) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -11,7 +26,6 @@ export function ChatEmptyState() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-center justify-center text-center h-[60vh] px-6"
         >
-            {/* Illustration */}
             <motion.div
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
@@ -23,33 +37,29 @@ export function ChatEmptyState() {
                     alt="Developer-friendly error explanation"
                     className="mb-6 w-[60px] rounded-xl"
                 />
-
             </motion.div>
 
-            <h2 className="text-xl font-semibold mb-2">
-                Welcome to DevLingo 👋
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">{title}</h2>
 
             <p className="text-sm text-muted-foreground max-w-md mb-8">
-                Paste an error, log, or code snippet and get a clear explanation
-                in your native language — without breaking your code.
+                {description}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl w-full">
                 <Example
                     icon={<Code2 className="h-5 w-5" />}
-                    title="Compiler Errors"
-                    text="error: expected ';' before '}'"
+                    title={examples.compilerTitle}
+                    text={examples.compilerText}
                 />
                 <Example
                     icon={<Terminal className="h-5 w-5" />}
-                    title="CLI Errors"
-                    text="npm ERR! peer dependency conflict"
+                    title={examples.cliTitle}
+                    text={examples.cliText}
                 />
                 <Example
                     icon={<Languages className="h-5 w-5" />}
-                    title="Native Language"
-                    text="Get explanations in Tamil, Hindi, Telugu…"
+                    title={examples.nativeTitle}
+                    text={examples.nativeText}
                 />
             </div>
         </motion.div>

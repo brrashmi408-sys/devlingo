@@ -1,0 +1,15 @@
+version: 1
+checksums:
+  ccd9883a935d21ec9b3e775ce5a85195:
+    welcome_title: 4066d3976befc0e97531a0991c49633a
+    welcome_description: b42f8215fdd8110727baff5c1bd9cb9d
+    thinking: 7d1a681e482c9a36c873727b71feb0d7
+    fallback_error: e8fe45fd99f753a7675d30ff9e44fc81
+    fallback_suggestion: 1b278189f9896ed10aed243c1d68b320
+    chat_input_placeholder: 16dd21e5587330f88e5d3f55f16eee00
+    empty_compiler_title: ccf8e7218201aef8c3c114aecffa5944
+    empty_compiler_example: c5fbd46640d020e8c16acebabb777434
+    empty_cli_title: 45b4c4da92b9f7181669fbb506969a64
+    empty_cli_example: 99550dbb737ea55884a05709dd9282c4
+    empty_native_title: 2f0032a18a53cbb617350e6bf280d56e
+    empty_native_example: 1f502ef4e8a4f615db904226f21368ef

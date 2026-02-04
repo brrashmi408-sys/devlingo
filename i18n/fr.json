@@ -1,0 +1,14 @@
+{
+  "welcome_title": "Bienvenue sur DevLingo 👋",
+  "welcome_description": "Collez une erreur, un log ou un extrait de code et obtenez une explication claire dans votre langue maternelle — sans casser votre code.",
+  "thinking": "DevLingo réfléchit…",
+  "fallback_error": "Désolé, impossible de traiter cette erreur pour le moment...",
+  "fallback_suggestion": "Réessayez ou vérifiez votre connexion.",
+  "chat_input_placeholder": "Posez-moi n'importe quelle question (collez votre erreur ici)…",
+  "empty_compiler_title": "Erreurs du compilateur",
+  "empty_compiler_example": "error: expected ';' before '}'",
+  "empty_cli_title": "Erreurs CLI",
+  "empty_cli_example": "npm ERR! peer dependency conflict",
+  "empty_native_title": "Langue maternelle",
+  "empty_native_example": "Obtenez des explications en tamoul, hindi, télougou…"
+}
