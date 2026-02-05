@@ -4,15 +4,20 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
+import { ModeToggle, type AppMode } from "@/components/ModeToggle";
 
 export function ChatInput({
     onSend,
     loading,
     placeholder,
+    mode,
+    onModeChange,
 }: {
     onSend: (value: string) => void;
     loading: boolean;
     placeholder: string;
+    mode: AppMode;
+    onModeChange: (mode: AppMode) => void;
 }) {
     const [value, setValue] = useState("");
 
@@ -25,6 +30,9 @@ export function ChatInput({
     return (
         <div className="bg-background pb-6">
             <div className="mx-auto max-w-3xl flex items-center gap-2">
+                {/* Mode Toggle */}
+                <ModeToggle mode={mode} onModeChange={onModeChange} />
+                
                 <Input
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
@@ -35,7 +43,7 @@ export function ChatInput({
                         }
                     }}
                     placeholder={placeholder}
-                    className="h-12 rounded-full px-4"
+                    className="h-12 rounded-full px-4 flex-1"
                 />
 
                 <Button

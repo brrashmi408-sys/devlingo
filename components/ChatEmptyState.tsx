@@ -10,7 +10,7 @@ export function ChatEmptyState({
 }: {
     title: string;
     description: string;
-    examples: {
+    examples?: {
         compilerTitle: string;
         compilerText: string;
         cliTitle: string;
@@ -45,23 +45,25 @@ export function ChatEmptyState({
                 {description}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl w-full">
-                <Example
-                    icon={<Code2 className="h-5 w-5" />}
-                    title={examples.compilerTitle}
-                    text={examples.compilerText}
-                />
-                <Example
-                    icon={<Terminal className="h-5 w-5" />}
-                    title={examples.cliTitle}
-                    text={examples.cliText}
-                />
-                <Example
-                    icon={<Languages className="h-5 w-5" />}
-                    title={examples.nativeTitle}
-                    text={examples.nativeText}
-                />
-            </div>
+            {examples && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl w-full">
+                    <Example
+                        icon={<Code2 className="h-5 w-5" />}
+                        title={examples.compilerTitle}
+                        text={examples.compilerText}
+                    />
+                    <Example
+                        icon={<Terminal className="h-5 w-5" />}
+                        title={examples.cliTitle}
+                        text={examples.cliText}
+                    />
+                    <Example
+                        icon={<Languages className="h-5 w-5" />}
+                        title={examples.nativeTitle}
+                        text={examples.nativeText}
+                    />
+                </div>
+            )}
         </motion.div>
     );
 }

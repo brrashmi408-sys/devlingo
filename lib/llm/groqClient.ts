@@ -6,6 +6,70 @@ import { classifyError, type ErrorCategory } from "@/lib/utils/errorClassifier";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
+export async function chatWithGroq(message: string, conversationContext: string, lang: string = "en") {
+    if (!process.env.GROQ_API_KEY) {
+        throw new Error("GROQ_API_KEY is missing in environment variables");
+    }
+
+    if (!SUPPORTED_LANGS[lang as keyof typeof SUPPORTED_LANGS]) {
+        throw new Error(`Unsupported language: ${lang}. Supported: ${Object.keys(SUPPORTED_LANGS).join(", ")}`);
+    }
+
+    const langName = SUPPORTED_LANGS[lang as keyof typeof SUPPORTED_LANGS];
+
+    // Create a conversational prompt for Groq
+    const chatPrompt = `You are DevLingo, a friendly AI assistant. You're having a casual conversation.
+
+Previous conversation:
+${conversationContext}
+
+User message: "${message}"
+
+Please respond naturally and conversationally in ${lang === "en" ? "English" : lang}. Be friendly, helpful, and engaging. Keep your responses concise but informative.
+
+This is NOT an error-fixing session. Do not provide code corrections unless specifically asked. Do not act like a technical debugger.
+
+Respond in a single, clean message without any JSON formatting or special characters.`;
+
+    const response = await fetch(GROQ_API_URL, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_tokens: 300,
+            messages: [
+                {
+                    role: "system",
+                    content: chatPrompt
+                },
+                {
+                    role: "user",
+                    content: message
+                }
+            ]
+        })
+    });
+
+    if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Groq API error: ${response.status} - ${errText}`);
+    }
+
+    const data = await response.json();
+
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
+        throw new Error("Empty response from Groq");
+    }
+
+    return content;
+}
+
 export async function explainWithGroq(errorMessage: string, lang: string = "en") {
     if (!process.env.GROQ_API_KEY) {
         throw new Error("GROQ_API_KEY is missing in environment variables");
