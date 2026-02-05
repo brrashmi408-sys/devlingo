@@ -15,12 +15,14 @@ type Message = {
   suggestion?: string;
   correctedCode?: string;
   sourceError?: string;
+  detectedCategory?: string;
 };
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [lang, setLang] = useState<SupportedLang>("en");
+  const [useAutoDetect, setUseAutoDetect] = useState(true); // 🎯 Default to auto-detect
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const t = getT(lang);
@@ -74,7 +76,10 @@ export default function Home() {
     setMessages((prev) => [...prev, { role: "user", content: error }]);
     setLoading(true);
 
-    const res = await fetch("/api/explain", {
+    // 🎯 Use auto-detection endpoint if enabled
+    const endpoint = useAutoDetect ? "/api/explain-auto" : "/api/explain";
+    
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ error, lang }),
@@ -90,6 +95,7 @@ export default function Home() {
         suggestion: data.suggestion,
         correctedCode: data.correctedCode,
         sourceError: error,
+        detectedCategory: data.detectedCategory, // 🎯 Include detected category
       },
     ]);
 
@@ -98,7 +104,12 @@ export default function Home() {
 
   return (
     <div className="flex h-screen flex-col">
-      <Header lang={lang} onLangChange={setLang} />
+      <Header 
+        lang={lang} 
+        onLangChange={setLang} 
+        useAutoDetect={useAutoDetect}
+        onAutoDetectToggle={setUseAutoDetect}
+      />
 
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-3xl flex flex-col gap-4">

@@ -4,14 +4,17 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSelect } from "@/components/LanguageSelect";
+import { AutoDetectToggle } from "@/components/AutoDetectToggle";
 import { type SupportedLang } from "@/lib/i18n/languages";
 
 interface HeaderProps {
     lang: SupportedLang;
     onLangChange: (newLang: SupportedLang) => void;
+    useAutoDetect?: boolean;
+    onAutoDetectToggle?: (enabled: boolean) => void;
 }
 
-export function Header({ lang, onLangChange }: HeaderProps) {
+export function Header({ lang, onLangChange, useAutoDetect = false, onAutoDetectToggle }: HeaderProps) {
     return (
         <header className="w-full border-b border-border">
             <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
@@ -44,6 +47,12 @@ export function Header({ lang, onLangChange }: HeaderProps) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2">
+                    {onAutoDetectToggle && (
+                        <AutoDetectToggle 
+                            enabled={useAutoDetect} 
+                            onToggle={onAutoDetectToggle} 
+                        />
+                    )}
                     <LanguageSelect value={lang} onChange={onLangChange} />
                     <ThemeToggle />
                 </div>
