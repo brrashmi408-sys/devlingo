@@ -51,40 +51,57 @@ export default function Home() {
     
     setLoading(true);
     try {
-      const res = await fetch("/api/explain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error, lang: targetLang }),
-      });
-
-      const data = await res.json();
-      console.log("Translation API response:", data);
-
-      setMessages((prev) => {
-        const updated = [...prev];
-        const currentMessage = updated[index];
+      const currentMessage = messages[index];
+      
+      if (currentMessage.content) {
+        // Chat mode message - use translate API
+        console.log("Translating chat message using /api/translate");
         
-        // Check if this is a chat message (has content) or error message (has explanation)
-        if (currentMessage.content) {
-          // Chat mode message - update content field
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            text: { explanation: currentMessage.content }, 
+            lang: targetLang 
+          }),
+        });
+
+        const data = await res.json();
+        console.log("Chat translation API response:", data);
+
+        setMessages((prev) => {
+          const updated = [...prev];
           updated[index] = {
             ...currentMessage,
-            content: data.explanation || data.response || "Translation failed",
+            content: data.explanation || currentMessage.content,
           };
-          console.log("Updated chat message content:", updated[index].content);
-        } else {
-          // Error mode message - update error fields
+          return updated;
+        });
+      } else {
+        // Error mode message - use explain API with original error
+        const originalError = currentMessage.sourceError || error;
+        console.log("Translating error message using /api/explain with original error:", originalError);
+        
+        const res = await fetch("/api/explain", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ error: originalError, lang: targetLang }),
+        });
+
+        const data = await res.json();
+        console.log("Error translation API response:", data);
+
+        setMessages((prev) => {
+          const updated = [...prev];
           updated[index] = {
             ...currentMessage,
             explanation: data.explanation,
             suggestion: data.suggestion,
             correctedCode: data.correctedCode,
-            sourceError: error,
           };
-          console.log("Updated error message fields");
-        }
-        return updated;
-      });
+          return updated;
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -126,13 +143,13 @@ export default function Home() {
         },
       ]);
     } else {
-      // Chat mode - use chat API
+      // Chat mode - use chat API (always generates in English)
       console.log("Using chat mode for message:", error);
       
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: error, sessionId, lang }),
+        body: JSON.stringify({ message: error, sessionId }),
       });
 
       const data = await res.json();
@@ -154,27 +171,57 @@ export default function Home() {
   function detectMode(input: string): AppMode {
     const lowerInput = input.toLowerCase().trim();
     
-    // Check for casual chat indicators first (higher priority)
+    // Check for casual chat indicators in multiple languages (highest priority)
     const chatIndicators = [
+      // English
       'hi', 'hello', 'hey', 'how are you', 'how\'s it going', 
       'what is', 'what are', 'can you', 'could you',
       'thanks', 'thank you', 'good morning', 'good afternoon',
-      'good evening', 'bye', 'see you', 'talk to you later'
+      'good evening', 'bye', 'see you', 'talk to you later',
+      
+      // Hindi
+      'नमस्ते', 'कैसे हो', 'आपका दिन कैसा चल रहा है', 'धन्यवाद',
+      'शुभ प्रभात', 'शुभ संध्या', 'अलविदा', '�िर मिलेंगे',
+      
+      // Tamil
+      'வணக்கம்', 'எப்படி இருக்கிறீர்கள்', 'நன்றி', 
+      'காலை வணக்கம்', 'மாலை வணக்கம்',
+      
+      // Telugu
+      'నమస్కారం', 'ఎలా ఉన్నారు', 'ధన్యవాదాలు',
+      'శుభోదయం', 'శుభ సాయంత్రం',
+      
+      // Spanish
+      'hola', 'cómo estás', 'gracias', 'buenos días', 
+      'buenas tardes', 'buenas noches', 'adiós',
+      
+      // French
+      'bonjour', 'comment allez-vous', 'merci', 'bon matin',
+      'bon après-midi', 'bonne soirée', 'au revoir',
+      
+      // German
+      'hallo', 'wie geht es dir', 'danke', 'guten morgen',
+      'guten tag', 'guten abend', 'auf wiedersehen',
+      
+      // General conversation patterns
+      'कैसा है', 'कैसी है', 'बताओ', 'बताइए', 'यह', 'यह एक', 'यह सामान्य'
     ];
     
     // Check if it's clearly a casual conversation
     const isCasualChat = chatIndicators.some(indicator => lowerInput.includes(indicator));
     
+    // If any chat indicator is found, immediately return chat mode
     if (isCasualChat) {
       return "chat";
     }
     
-    // Error indicators (lower priority now)
+    // Error indicators (only checked if no chat indicators found)
     const errorKeywords = [
       'error', 'exception', 'failed', 'cannot', 'undefined', 'null',
       'syntax error', 'typeerror', 'referenceerror', 'compile',
       'npm err', 'yarn error', 'git error', 'command not found',
-      'module not found', 'dependency', 'port already', 'env'
+      'module not found', 'dependency', 'port already', 'env',
+      'त्रुटि', 'एरर', 'गलती' // Hindi error words
     ];
     
     // Check if input contains error indicators
@@ -185,11 +232,11 @@ export default function Home() {
     
     // Only use error mode if it has clear error indicators OR code patterns
     // AND it's not clearly a casual chat
-    if ((hasErrorKeywords || hasCodeIndicators) && !isCasualChat) {
+    if (hasErrorKeywords || hasCodeIndicators) {
       return "error";
     }
     
-    // Otherwise, use chat mode
+    // Default to chat mode for safety
     return "chat";
   }
 

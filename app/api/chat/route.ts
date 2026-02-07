@@ -8,7 +8,7 @@ const chatHistory = new Map<string, Array<{role: string, content: string}>>();
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { message, sessionId = "default", lang = "en" } = body;
+        const { message, sessionId = "default" } = body; // Remove lang parameter
 
         if (!message || typeof message !== "string") {
             return NextResponse.json(
@@ -32,11 +32,11 @@ export async function POST(req: Request) {
             .map(msg => `${msg.role}: ${msg.content}`)
             .join('\n');
 
-        // Generate AI response using Groq chat
-        console.log("Chat API - Processing message:", message, "Language:", lang);
+        // Generate AI response using Groq chat (always in English)
+        console.log("Chat API - Processing message:", message);
         
-        // Use Groq for conversational response
-        const aiResponse = await chatWithGroq(message, conversationContext, lang);
+        // Use Groq for conversational response in English only
+        const aiResponse = await chatWithGroq(message, conversationContext, "en");
         
         console.log("Chat API - Groq response:", aiResponse);
         
