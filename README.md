@@ -2,7 +2,7 @@
 
 **Transform cryptic error messages into crystal-clear solutions—in YOUR language!**
 
-DevLingo is the revolutionary AI-powered tool that's breaking down language barriers in programming. Built for developers, by developers, it turns frustrating error messages into understandable explanations and actionable solutions, all while supporting 12+ languages globally.
+DevLingo is the revolutionary AI-powered tool that's breaking down language barriers in programming. Built for developers, by developers, it turns frustrating error messages into understandable explanations and actionable solutions, all while supporting 9 languages globally.
 
 ---
 
@@ -22,7 +22,7 @@ DevLingo eliminates this friction by making programming errors universally under
 - **Language Detection**: Identifies programming languages from error messages
 
 ### 🌐 **True Global Accessibility**
-- **12 Languages**: English, Hindi, Tamil, Telugu, Kannada, Malayalam, Spanish, French, German, Italian, Portuguese
+- **9 Languages**: English, Hindi, Tamil, Telugu, Kannada, Malayalam, Spanish, French, German
 - **Instant Translation**: Switch languages mid-conversation without losing context
 - **Cultural Adaptation**: Translations feel natural, not robotic
 
@@ -235,8 +235,6 @@ POST /api/chat
 | Spanish | es | ✅ | ✅ | ✅ |
 | French | fr | ✅ | ✅ | ✅ |
 | German | de | ✅ | ✅ | ✅ |
-| Italian | it | ✅ | ✅ | ✅ |
-| Portuguese | pt | ✅ | ✅ | ✅ |
 
 ---
 
@@ -289,7 +287,7 @@ POST /api/chat
 
 ## 📊 Impact Metrics
 
-- **12 Languages** Supported
+- **9 Languages** Supported
 - **5 Error Categories** Automatically Detected
 - **<1 Second** Response Time
 - **60%+ Reduction** in Debugging Time
