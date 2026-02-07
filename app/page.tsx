@@ -54,15 +54,16 @@ export default function Home() {
       const currentMessage = messages[index];
       
       if (currentMessage.content) {
-        // Chat mode message - use translate API
-        console.log("Translating chat message using /api/translate");
+        // Chat mode message - use fast translate API
+        console.log("Translating chat message using fast /api/translate");
         
         const res = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             text: { explanation: currentMessage.content }, 
-            lang: targetLang 
+            lang: targetLang,
+            useFastTranslation: true
           }),
         });
 
