@@ -2,6 +2,8 @@
 
 **Transform cryptic error messages into crystal-clear solutions—in YOUR language!**
 
+🌐 **Live Demo:** [https://devlingo-alpha.vercel.app/](https://devlingo-alpha.vercel.app/) | ⭐ **Star us on GitHub!**
+
 DevLingo is the revolutionary AI-powered tool that's breaking down language barriers in programming. Built for developers, by developers, it turns frustrating error messages into understandable explanations and actionable solutions, all while supporting 9 languages globally.
 
 ---
@@ -158,6 +160,11 @@ npm run dev
 ```
 
 **🎉 That's it! Open http://localhost:3000 and start coding barrier-free!**
+
+### 🌐 **Live Demo**
+**Try DevLingo now:** [https://devlingo-alpha.vercel.app/](https://devlingo-alpha.vercel.app/)
+
+Experience the power of multilingual error analysis and chat assistance in real-time!
 
 ---
 
@@ -329,6 +336,8 @@ POST /api/chat
 # 🚀 **Ready to Code Without Boundaries?**
 
 **Start using DevLingo today and transform your debugging experience forever.**
+
+🌐 **Try it live:** [https://devlingo-alpha.vercel.app/](https://devlingo-alpha.vercel.app/) | 📦 **Local setup:** Follow the installation guide above
 
 ---
 
